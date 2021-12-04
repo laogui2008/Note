@@ -8,13 +8,13 @@ apt-get install -y python python-twisted python-openssl python-setuptools intlto
 
 RSC="https://raw.githubusercontent.com/MoeClub/Note/master/Deluge/deluge"
 wget --no-check-certificate -qO- "${RSC}/deluge-1.3.15.tar.gz" |tar -zvx -C /tmp
-cd /tmp/deluge-* && ppython setup.py install --force --install-layout=deb --single-version-externally-managed --record /tmp/deluge.log
+cd /tmp/deluge-* && python setup.py install --force --install-layout=deb --single-version-externally-managed --record /tmp/deluge.log
 
 pip3 install lxml==4.3.5 deluge_client
 
 mkdir -p "$HOME/.config/deluge/plugins"
 wget --no-check-certificate -qO "$HOME/.config/deluge/deluged" "${RSC}/deluged"
-wget --no-check-certificate -qO "$HOME/.config/deluge/deluge_passwd.py" "${RSC}deluge_passwd.py"
+wget --no-check-certificate -qO "$HOME/.config/deluge/deluge_passwd.py" "${RSC}/deluge_passwd.py"
 wget --no-check-certificate -qO "$HOME/.config/deluge/web.conf" "${RSC}/web.conf"
 wget --no-check-certificate -qO "$HOME/.config/deluge/core.conf" "${RSC}/core.conf"
 wget --no-check-certificate -qO "$HOME/.config/deluge/ltconfig.conf" "${RSC}/ltconfig.conf"
