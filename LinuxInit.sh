@@ -1,10 +1,23 @@
 #!/bin/bash
 
-apt-get install -y openssl net-tools dnsutils nload curl lsof
+apt-get install -y openssl net-tools dnsutils nload curl wget lsof psmisc iptables
 
-# root
-sed -i 's/^#\?PermitRootLogin.*/PermitRootLogin yes/g' /etc/ssh/sshd_config;
-sed -i 's/^#\?PasswordAuthentication.*/PasswordAuthentication yes/g' /etc/ssh/sshd_config;
+if [ -d /etc/systemd ]; then
+  # systemd-journald
+  if [ -f /etc/systemd/journald.conf ]; then
+    sed -i 's/^#\?Storage=.*/Storage=volatile/' /etc/systemd/journald.conf
+    sed -i 's/^#\?SystemMaxUse=.*/SystemMaxUse=8M/' /etc/systemd/journald.conf
+    sed -i 's/^#\?RuntimeMaxUse=.*/RuntimeMaxUse=8M/' /etc/systemd/journald.conf
+    sed -i 's/^#\?ForwardToSyslog=.*/ForwardToSyslog=no/' /etc/systemd/journald.conf
+    systemctl restart systemd-journald
+  fi
+  # systemd-timesyncd
+  apt-get install -y systemd-timesyncd
+  if [ -f /etc/systemd/timesyncd.conf ]; then
+    echo -ne "[Time]\nNTP=time.apple.com time.windows.com pool.ntp.org ntp.ntsc.ac.cn\nRootDistanceMaxSec=3\nPollIntervalMinSec=24\nPollIntervalMaxSec=512\n\n" >/etc/systemd/timesyncd.conf
+    systemctl restart systemd-timesyncd
+  fi
+fi
 
 # limits
 if [ -f /etc/security/limits.conf ]; then
@@ -12,15 +25,16 @@ if [ -f /etc/security/limits.conf ]; then
   sed -i '/^\(\*\|root\)[[:space:]]*\(hard\|soft\)[[:space:]]*\(nofile\|memlock\)/d' /etc/security/limits.conf
   echo -ne "*\thard\tmemlock\t${LIMIT}\n*\tsoft\tmemlock\t${LIMIT}\nroot\thard\tmemlock\t${LIMIT}\nroot\tsoft\tmemlock\t${LIMIT}\n*\thard\tnofile\t${LIMIT}\n*\tsoft\tnofile\t${LIMIT}\nroot\thard\tnofile\t${LIMIT}\nroot\tsoft\tnofile\t${LIMIT}\n\n" >>/etc/security/limits.conf
 fi
+if [ -f /etc/systemd/system.conf ]; then
+  sed -i 's/#\?DefaultLimitNOFILE=.*/DefaultLimitNOFILE=262144/' /etc/systemd/system.conf
+fi
+
+# root
+sed -i 's/^#\?PermitRootLogin.*/PermitRootLogin yes/g' /etc/ssh/sshd_config;
+sed -i 's/^#\?PasswordAuthentication.*/PasswordAuthentication yes/g' /etc/ssh/sshd_config;
 
 # timezone
 ln -sf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime && echo "Asia/Shanghai" >/etc/timezone
-
-# systemd-journald
-sed -i 's/^#\?Storage=.*/Storage=volatile/' /etc/systemd/journald.conf
-sed -i 's/^#\?SystemMaxUse=.*/SystemMaxUse=8M/' /etc/systemd/journald.conf
-sed -i 's/^#\?RuntimeMaxUse=.*/RuntimeMaxUse=8M/' /etc/systemd/journald.conf
-systemctl restart systemd-journald
 
 # ssh
 [ -d ~/.ssh ] || mkdir -p ~/.ssh
@@ -36,36 +50,37 @@ cat >/etc/sysctl.conf<<EOF
 fs.file-max = 104857600
 fs.nr_open = 1048576
 vm.overcommit_memory = 1
-net.core.somaxconn = 65535
-net.core.optmem_max = 262144
-net.core.rmem_max = 8388608
-net.core.wmem_max = 8388608
-net.core.rmem_default = 262144
-net.core.wmem_default = 262144
-net.core.netdev_max_backlog = 65536
-net.ipv4.tcp_mem = 4096 262144 8388608
-net.ipv4.tcp_rmem = 4096 262144 8388608
-net.ipv4.tcp_wmem = 4096 262144 8388608
+net.core.somaxconn = 1048576
+net.core.optmem_max = 7864320
+net.core.rmem_max = 7864320
+net.core.wmem_max = 7864320
+net.core.rmem_default = 7864320
+net.core.wmem_default = 7864320
+net.core.netdev_max_backlog = 1048576
+net.ipv4.tcp_mem = 32768 49152 65536
+net.ipv4.tcp_rmem = 4096 87380 7864320
+net.ipv4.tcp_wmem = 4096 16384 7864320
 net.ipv4.tcp_syncookies = 1
 net.ipv4.tcp_syn_retries = 3
 net.ipv4.tcp_synack_retries = 2
-net.ipv4.tcp_max_syn_backlog = 65535
-net.ipv4.tcp_fin_timeout = 16
+net.ipv4.tcp_max_syn_backlog = 1048576
+net.ipv4.tcp_fin_timeout = 8
 net.ipv4.tcp_keepalive_intvl = 32
 net.ipv4.tcp_keepalive_probes = 3
 net.ipv4.tcp_keepalive_time = 900
 net.ipv4.tcp_retries1 = 3
-net.ipv4.tcp_retries2 = 8
+net.ipv4.tcp_retries2 = 5
 net.ipv4.tcp_no_metrics_save = 1
 net.ipv4.tcp_timestamps = 1
+net.ipv4.tcp_window_scaling = 1
 net.ipv4.tcp_slow_start_after_idle = 0
 net.ipv4.ip_forward = 1
 
-net.core.default_qdisc = fq
-net.ipv4.tcp_congestion_control = bbr
-
 net.ipv4.icmp_echo_ignore_all = 1
-net.ipv6.conf.all.disable_ipv6 = 1
+net.ipv6.conf.all.disable_ipv6 = 0
+net.ipv6.conf.all.forwarding = 1
+net.ipv6.conf.all.accept_ra = 2
+net.ipv6.conf.all.proxy_ndp = 1
 
 net.ipv4.tcp_fastopen = 0
 net.ipv4.tcp_fack = 1
@@ -73,6 +88,9 @@ net.ipv4.tcp_sack = 1
 net.ipv4.tcp_dsack = 1
 net.ipv4.tcp_ecn = 0
 net.ipv4.tcp_ecn_fallback = 1
+
+net.core.default_qdisc = fq_codel
+net.ipv4.tcp_congestion_control = bbr
 
 EOF
 sysctl -p

@@ -42,7 +42,7 @@ user_pref("browser.newtabpage.activity-stream.section.highlights.includePocket",
 user_pref("browser.newtabpage.activity-stream.section.highlights.includeVisited", false);
 user_pref("browser.newtabpage.enhanced", true);
 user_pref("browser.newtabpage.introShown", true);
-user_pref("browser.newtabpage.pinned", "[{\"url\":\"http://bilibili.com/\",\"title\":\"bilibili\",\"baseDomain\":\"bilibili.com\"},{\"url\":\"http://youku.com\",\"title\":\"Youku\",\"baseDomain\":\"youku.com\"},{\"url\":\"http://www.iqiyi.com\",\"title\":\"IQiYi\",\"baseDomain\":\"iqiyi.com\"},{\"url\":\"http://v.qq.com\",\"title\":\"Tencent\",\"baseDomain\":\"v.qq.com\"},{\"url\":\"http://kyfw.12306.cn/otn\",\"title\":\"12306\",\"baseDomain\":\"kyfw.12306.cn\"},{\"url\":\"http://taobao.com\",\"title\":\"Taobao\",\"baseDomain\":\"taobao.com\"},{\"url\":\"http://share.dmhy.org/cms/page/name/programme.html\",\"title\":\"DMHY\",\"baseDomain\":\"share.dmhy.org\"},{\"url\":\"https://google.com\",\"label\":\"@google\",\"searchTopSite\":true}]");
+user_pref("browser.newtabpage.pinned", "[{\"url\":\"http://bilibili.com/\",\"title\":\"bilibili\",\"baseDomain\":\"bilibili.com\"},{\"url\":\"http://youku.com\",\"title\":\"Youku\",\"baseDomain\":\"youku.com\"},{\"url\":\"http://www.iqiyi.com\",\"title\":\"IQiYi\",\"baseDomain\":\"iqiyi.com\"},{\"url\":\"http://v.qq.com\",\"title\":\"Tencent\",\"baseDomain\":\"v.qq.com\"},{\"url\":\"https://s.weibo.com/top/summary?cate=realtimehot\",\"title\":\"hot\",\"baseDomain\":\"weibo.com\"},{\"url\":\"https://hostloc.com/forum.php?mod=forumdisplay&fid=45&filter=author&orderby=dateline\",\"title\":\"Hostloc\",\"baseDomain\":\"hostloc.com\"},{\"url\":\"https://api.agespa-config.com:8443/#/update\",\"title\":\"age\",\"baseDomain\":\"api.agespa-config.com\"},{\"url\":\"https://bbs.nga.cn/thread.php?fid=-7&order_by=postdatedesc\",\"title\":\"nga\",\"baseDomain\":\"bbs.nga.cn\"}]");
 user_pref("browser.newtabpage.storageVersion", 1);
 user_pref("browser.pageActions.persistedActions", "{\"version\":1,\"ids\":[\"bookmark\",\"pinTab\",\"bookmarkSeparator\",\"copyURL\",\"emailLink\",\"addSearchEngine\",\"sendToDevice\",\"shareURL\",\"screenshots_mozilla_org\"],\"idsInUrlbar\":[\"bookmark\"]}");
 user_pref("browser.pagethumbnails.storage_version", 3);
@@ -109,4 +109,8 @@ user_pref("toolkit.telemetry.reportingpolicy.firstRun", false);
 user_pref("trailhead.firstrun.didSeeAboutWelcome", true);
 user_pref("xpinstall.signatures.required", false);
 user_pref("full-screen-api.macos-native-full-screen", true);
+user_pref("gfx.webrender.all", true);
+user_pref("gfx.webrender.software", false);
+user_pref("accessibility.typeaheadfind.matchesCountLimit", 99999999);
+user_pref("network.http.http3.enable", false);
 
